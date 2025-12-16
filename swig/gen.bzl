@@ -33,6 +33,24 @@ def _swig_gen_cc_impl(ctx):
     # Base name for generated files (from interface file)
     interface_file = ctx.file.interface
 
+    # Get SWIG_LIB path from the swig_lib attribute
+    # swig_lib can be either a directory (tree artifact) or individual files
+    swig_lib_files = ctx.files.swig_lib
+    swig_lib_path = None
+
+    if len(swig_lib_files) == 1 and swig_lib_files[0].is_directory:
+        # Tree artifact - the directory itself is the SWIG_LIB path
+        swig_lib_path = swig_lib_files[0].path
+    else:
+        # Individual files - find swig.swg and use its directory
+        for f in swig_lib_files:
+            if f.path.endswith("/swig.swg") or f.basename == "swig.swg":
+                swig_lib_path = f.dirname
+                break
+
+    if not swig_lib_path:
+        fail("Could not find SWIG library path. Ensure swig_lib points to extracted SWIG library files containing swig.swg.")
+
     # Arguments for SWIG
     args = ctx.actions.args()
     args.add("-c++")
@@ -53,9 +71,9 @@ def _swig_gen_cc_impl(ctx):
     args.add("-outdir", python_out.dirname)
     args.add(interface_file.path)
 
-    # Inputs: interface + all headers + transitive deps
+    # Inputs: interface + all headers + transitive deps + swig library files
     inputs = depset(
-        direct = [interface_file] + ctx.files.hdrs,
+        direct = [interface_file] + ctx.files.hdrs + swig_lib_files,
         transitive = [compilation_context.headers],
     )
 
@@ -70,6 +88,9 @@ def _swig_gen_cc_impl(ctx):
         tools = tools,
         mnemonic = "SwigGenCC",
         progress_message = "Generating SWIG bindings for %{label}",
+        env = {
+            "SWIG_LIB": swig_lib_path,
+        },
     )
 
     return [
@@ -108,6 +129,10 @@ swig_gen = rule(
             default = "@swig//:swig",
             executable = True,
             cfg = "exec",
+        ),
+        "swig_lib": attr.label(
+            mandatory = True,
+            doc = "SWIG library directory containing swig.swg and language-specific files",
         ),
     },
     fragments = ["cpp"],
