@@ -50,11 +50,21 @@ apt.install(
     dependency_set = "bookworm",
     target_release = "bookworm",
     packages = [
+        # Core C/C++ runtime libraries (needed by gcc toolchain)
         "libstdc++-12-dev",
         "libstdc++6",
         "linux-libc-dev",
         "libc6-dev",
         "libgcc-12-dev",
+        # Common packages shared across sonic-gnmi and sonic-swss-common
+        "libhiredis-dev",
+        "libnl-3-dev",
+        "libnl-route-3-dev",
+        "libnl-nf-3-dev",
+        "libzmq3-dev",
+        "uuid-dev",
+        "libboost-dev",
+        "libboost-serialization-dev",
     ]
 )
 

@@ -33,7 +33,8 @@ cc_toolchain(
         "//toolchains/gcc/args:nostdinc",
         "//toolchains/gcc/args:nostdinc++",
         "//toolchains/gcc/args:links",
-        "//toolchains/gcc/args:includes",
+        "//toolchains/gcc/args:c_includes",  # C compilation with -isystem for libc
+        "//toolchains/gcc/args:cpp_includes",  # C++ compilation with -idirafter for #include_next
         "//toolchains/args:no_absolute_paths_for_builtins",
         "//toolchains/args:warnings",
     ],
