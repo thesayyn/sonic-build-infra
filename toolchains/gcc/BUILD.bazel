@@ -26,8 +26,13 @@ cc_feature(
     visibility = ["//visibility:public"],
 )
 
-cc_toolchain(
+alias(
     name = "host_gcc",
+    actual = ":gcc",
+)
+
+cc_toolchain(
+    name = "gcc",
     args = [
         "//toolchains/gcc/args:nostdlib",
         "//toolchains/gcc/args:nostdinc",
