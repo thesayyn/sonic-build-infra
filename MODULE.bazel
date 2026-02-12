@@ -8,7 +8,7 @@ bazel_dep(name = "rules_distroless", version = "0.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 local_path_override(
     module_name = "rules_distroless",
-    path = "../rules_distroless"
+    path = "../../bazel-contrib/rules_distroless"
 )
 
 
@@ -49,7 +49,11 @@ apt.sources_list(
 
 apt.install(
     dependency_set = "bookworm",
-    suites = ["bookworm"],
+    suites = [
+        "bookworm",
+        "bookworm-updates",
+        "bookworm-security",
+    ],
     packages = [
         "libstdc++-12-dev",
         "libstdc++6",
