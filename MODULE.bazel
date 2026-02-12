@@ -49,11 +49,10 @@ apt.sources_list(
 
 apt.install(
     dependency_set = "bookworm",
-    # TOOD BL: This is not supported by the latest rules_distroless
-    # target_release = "bookworm",
     suites = [
         "bookworm",
         "bookworm-updates",
+        "bookworm-security",
     ],
     packages = [
         "libstdc++-12-dev",
