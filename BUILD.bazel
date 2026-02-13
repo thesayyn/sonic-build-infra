@@ -1,0 +1,22 @@
+load("//config:constants.bzl", "ASIC_MANUFACTURERS", "DEVICES")
+
+alias(
+  name = "asic_manufacturer",
+  actual = "//config:asic_manufacturer",
+  visibility = ["//visibility:public"],
+)
+
+alias(
+  name = "device",
+  actual = "//config:device",
+  visibility = ["//visibility:public"],
+)
+
+[
+    alias(
+      name = target_to_alias,
+      actual = "//config:{}".format(target_to_alias),
+      visibility = ["//visibility:public"],
+    )
+    for target_to_alias in DEVICES + ASIC_MANUFACTURERS
+]
