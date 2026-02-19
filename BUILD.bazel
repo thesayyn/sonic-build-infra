@@ -12,11 +12,14 @@ alias(
   visibility = ["//visibility:public"],
 )
 
+DEVICE_TARGETS = ["device_{}".format(device) for device in DEVICES]
+ASIC_MANUFACTURER_TARGETS = ["platform_{}".format(asic) for asic in ASIC_MANUFACTURERS]
 [
     alias(
       name = target_to_alias,
       actual = "//config:{}".format(target_to_alias),
       visibility = ["//visibility:public"],
     )
-    for target_to_alias in DEVICES + ASIC_MANUFACTURERS
+    for target_to_alias in DEVICE_TARGETS + ASIC_MANUFACTURER_TARGETS
 ]
+
