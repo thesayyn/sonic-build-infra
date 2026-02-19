@@ -31,6 +31,14 @@ directory(
     ]),
 )
 
+# GCC builtin headers (stddef.h, stdarg.h, etc.)
+directory(
+    name = "builtin_headers",
+    srcs = glob([
+        "lib/gcc/x86_64-linux/12.5.0/include/**",
+    ]),
+)
+
 # Various supporting files needed to run the linker.
 filegroup(
     name = "linker_builtins",
