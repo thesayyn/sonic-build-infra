@@ -1,4 +1,4 @@
-load("//config:constants.bzl", "ASIC_MANUFACTURERS", "DEVICES")
+load("//config:constants.bzl", "ASIC_MANUFACTURERS", "BOOLEAN_TOGGLES", "DEVICES")
 
 alias(
     name = "asic_manufacturer",
@@ -23,3 +23,20 @@ ASIC_MANUFACTURER_TARGETS = ["platform_{}".format(asic) for asic in ASIC_MANUFAC
     for target_to_alias in DEVICE_TARGETS + ASIC_MANUFACTURER_TARGETS
 ]
 
+[
+    alias(
+        name = toggle,
+        actual = "//config:{}".format(toggle),
+        visibility = ["//visibility:public"],
+    )
+    for toggle in BOOLEAN_TOGGLES
+]
+
+[
+    alias(
+        name = "{}_enabled".format(toggle),
+        actual = "//config:{}_enabled".format(toggle),
+        visibility = ["//visibility:public"],
+    )
+    for toggle in BOOLEAN_TOGGLES
+]
