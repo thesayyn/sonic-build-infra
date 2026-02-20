@@ -1,24 +1,24 @@
 load("//config:constants.bzl", "ASIC_MANUFACTURERS", "DEVICES")
 
 alias(
-  name = "asic_manufacturer",
-  actual = "//config:asic_manufacturer",
-  visibility = ["//visibility:public"],
+    name = "asic_manufacturer",
+    actual = "//config:asic_manufacturer",
+    visibility = ["//visibility:public"],
 )
 
 alias(
-  name = "device",
-  actual = "//config:device",
-  visibility = ["//visibility:public"],
+    name = "device",
+    actual = "//config:device",
+    visibility = ["//visibility:public"],
 )
 
 DEVICE_TARGETS = ["device_{}".format(device) for device in DEVICES]
 ASIC_MANUFACTURER_TARGETS = ["platform_{}".format(asic) for asic in ASIC_MANUFACTURERS]
 [
     alias(
-      name = target_to_alias,
-      actual = "//config:{}".format(target_to_alias),
-      visibility = ["//visibility:public"],
+        name = target_to_alias,
+        actual = "//config:{}".format(target_to_alias),
+        visibility = ["//visibility:public"],
     )
     for target_to_alias in DEVICE_TARGETS + ASIC_MANUFACTURER_TARGETS
 ]

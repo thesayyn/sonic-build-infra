@@ -7,13 +7,11 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "tar.bzl", version = "0.8.1")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "bazel_lib", version = "3.1.1")
-
 bazel_dep(name = "rules_distroless", version = "0.0.0")
 local_path_override(
     module_name = "rules_distroless",
-    path = "../../bazel-contrib/rules_distroless"
+    path = "../../bazel-contrib/rules_distroless",
 )
-
 
 fetch_gcc = use_repo_rule("//toolchains/gcc:gcc.bzl", "fetch_gcc")
 
@@ -31,9 +29,7 @@ fetch_gcc(
 
 register_toolchains("//toolchains/gcc:host_gcc_toolchain")
 
-
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
-
 apt.sources_list(
     architectures = ["amd64"],
     components = ["main"],
@@ -49,30 +45,28 @@ apt.sources_list(
     suites = ["bookworm-security"],
     uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
 )
-
 apt.install(
     dependency_set = "bookworm",
+    packages = [
+        "libc6-dev",
+        "libgcc-12-dev",
+        "libstdc++-12-dev",
+        "libstdc++6",
+        "linux-libc-dev",
+    ],
     suites = [
         "bookworm",
         "bookworm-updates",
         "bookworm-security",
     ],
-    packages = [
-        "libstdc++-12-dev",
-        "libstdc++6",
-        "linux-libc-dev",
-        "libc6-dev",
-        "libgcc-12-dev",
-    ]
 )
-
 use_repo(
     apt,
+    "bookworm-security_linux-libc-dev-amd64_6.1.153-1",
+    "bookworm_libc6-amd64_2.36-9-deb12u13",
+    "bookworm_libc6-dev-amd64_2.36-9-deb12u13",
+    "bookworm_libgcc-12-dev-amd64_12.2.0-14-deb12u1",
+    "bookworm_libgcc-s1-amd64_12.2.0-14-deb12u1",
     "bookworm_libstdc---12-dev-amd64_12.2.0-14-deb12u1",
     "bookworm_libstdc--6-amd64_12.2.0-14-deb12u1",
-    "bookworm_libgcc-s1-amd64_12.2.0-14-deb12u1",
-    "bookworm_libgcc-12-dev-amd64_12.2.0-14-deb12u1",
-    "bookworm-security_linux-libc-dev-amd64_6.1.153-1",
-    "bookworm_libc6-dev-amd64_2.36-9-deb12u13",
-    "bookworm_libc6-amd64_2.36-9-deb12u13",
 )
