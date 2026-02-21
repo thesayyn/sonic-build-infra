@@ -35,6 +35,6 @@ fetch_gcc = repository_rule(
     attrs = {
         "urls": attr.string_list(),
         "integrity": attr.string(),
-        "build_file": attr.label(default = "//toolchains/gcc:gcc.BUILD")
-    }
+        "build_file": attr.label(default = "//toolchains/gcc:gcc.BUILD"),
+    },
 )

@@ -1,5 +1,5 @@
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@tar.bzl", "tar", "mutate")
+load("@tar.bzl", "mutate", "tar")
 
 def _export_pyinfo(ctx):
     files = []
@@ -11,8 +11,8 @@ export_py_info = rule(
     implementation = _export_pyinfo,
     doc = "Export `PyInfo.transitive_sources` as DefaultInfo.",
     attrs = {
-        "srcs": attr.label_list(providers = [PyInfo])
-    }
+        "srcs": attr.label_list(providers = [PyInfo]),
+    },
 )
 
 def site_packages(name, srcs, **kwargs):
