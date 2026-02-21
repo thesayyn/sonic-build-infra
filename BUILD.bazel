@@ -13,7 +13,9 @@ alias(
 )
 
 DEVICE_TARGETS = ["device_{}".format(device) for device in DEVICES]
+
 ASIC_MANUFACTURER_TARGETS = ["platform_{}".format(asic) for asic in ASIC_MANUFACTURERS]
+
 [
     alias(
         name = target_to_alias,
@@ -40,3 +42,9 @@ ASIC_MANUFACTURER_TARGETS = ["platform_{}".format(asic) for asic in ASIC_MANUFAC
     )
     for toggle in BOOLEAN_TOGGLES
 ]
+
+alias(
+    name = "debug_enabled",
+    actual = "//config:debug_enabled",
+    visibility = ["//visibility:public"],
+)
