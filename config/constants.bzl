@@ -57,3 +57,10 @@ DEVICES = [
     # sonic-buildimage doesn't default PLATFORM, so we shouldn't either.
     "_incompatible",
 ]
+
+BOOLEAN_TOGGLES = [
+    "asan",
+    "tsan",
+    "usan",
+    "gcov",
+]

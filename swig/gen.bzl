@@ -25,7 +25,6 @@ def _swig_gen_cc_impl(ctx):
         compilation_contexts = compilation_contexts,
     )
 
-
     # Output files
     cpp_out = ctx.outputs.cpp_out
     python_out = ctx.outputs.python_out
@@ -62,10 +61,9 @@ def _swig_gen_cc_impl(ctx):
     # Get include flags (-Ipath)
     include_args = []
     for include in compilation_context.includes.to_list():
-        args.add("-I" +  include)
+        args.add("-I" + include)
     for external_include in compilation_context.external_includes.to_list():
         args.add("-I" + external_include)
-
 
     args.add("-o", cpp_out.path)
     args.add("-outdir", python_out.dirname)
