@@ -1,5 +1,5 @@
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@tar.bzl", "tar", "mutate")
+load("@tar.bzl", "mutate", "tar")
 
 def _export_pyinfo(ctx):
     files = []
@@ -25,7 +25,7 @@ export_py_info = rule(
             doc = "If set, exclude any file containing the filter from being exported. Does not support globbing.",
             default = "",
         ),
-    }
+    },
 )
 
 def site_packages(name, srcs, exclude_filter = "", **kwargs):

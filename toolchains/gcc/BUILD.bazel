@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 load("@rules_cc//cc/toolchains:make_variable.bzl", "cc_make_variable")
 load("@rules_cc//cc/toolchains:toolchain.bzl", "cc_toolchain")
-load("@rules_cc//cc/toolchains:feature.bzl", "cc_feature")
 
 licenses(["notice"])
 
 # https://github.com/bazelbuild/rules_cc/commit/283d572e0e1f4fe864f1f94db2c2cd27cb1dcc6e
 cc_feature(
     name = "external_include_paths",
-    feature_name = "external_include_paths",
     args = ["@rules_cc//cc/toolchains/args/external_include_paths"],
+    feature_name = "external_include_paths",
     visibility = ["//visibility:public"],
 )
 
@@ -42,17 +42,17 @@ cc_toolchain(
         "//toolchains/args:no_absolute_paths_for_builtins",
         "//toolchains/args:warnings",
     ],
+    compiler = "gcc",
     enabled_features = [
         ":external_include_paths",
-        "@rules_cc//cc/toolchains/args:experimental_replace_legacy_action_config_features"
+        "@rules_cc//cc/toolchains/args:experimental_replace_legacy_action_config_features",
     ],
-    known_features =  [
+    known_features = [
         ":external_include_paths",
-        "@rules_cc//cc/toolchains/args:experimental_replace_legacy_action_config_features"
+        "@rules_cc//cc/toolchains/args:experimental_replace_legacy_action_config_features",
     ],
     tags = ["manual"],
     tool_map = "//toolchains/gcc/tools:all_tools",
-    compiler = "gcc"
 )
 
 toolchain(
