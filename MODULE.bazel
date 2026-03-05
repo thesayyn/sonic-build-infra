@@ -1,4 +1,8 @@
-module(name = "sonic-build-infra")
+# Keep bazel_compatibility in sync with sonic-buildimage's .bazelversion.
+module(
+    name = "sonic-build-infra",
+    bazel_compatibility = [">=8.5.1", "<=8.5.1"],
+)
 
 bazel_dep(name = "swig", version = "4.1.0")
 bazel_dep(name = "rules_cc", version = "0.2.14")
