@@ -1,17 +1,11 @@
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@tar.bzl", "mutate", "tar")
+load("@tar.bzl", _mutate = "mutate", "tar")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
 def _export_pyinfo(ctx):
     files = []
-    filter = ctx.attr.exclude_filter
     for dep in ctx.attr.srcs:
-        files_to_export = []
-        # TODO(bazel-ready): This is terribly inefficient, ideally we'd implement this functionality in tar.bzl
-        for file in dep[PyInfo].transitive_sources.to_list():
-            if filter == "" or filter not in file.path:
-                files_to_export.append(file)
-
-        files.append(depset(files_to_export))
+        files.append(dep[PyInfo].transitive_sources)
     return DefaultInfo(files = depset([], transitive = files))
 
 export_py_info = rule(
@@ -21,25 +15,65 @@ export_py_info = rule(
         "srcs": attr.label_list(
             providers = [PyInfo],
         ),
-        "exclude_filter": attr.string(
-            doc = "If set, exclude any file containing the filter from being exported. Does not support globbing.",
-            default = "",
-        ),
     },
 )
 
-def site_packages(name, srcs, exclude_filter = "", **kwargs):
+def site_packages(name, srcs, mutate = None, **kwargs):
     """
     Conveninece macro to create a tar with a bunch of python dependencies.
     srcs must export the required files with `PyInfo`.
+
+    Args:
+        name: Target name (also used as the name of the tar).
+        srcs: List of targets that export `PyInfo` (e.g. `py_library` targets).
+        mutate: Not allowed. If you want to use `mutate`, chances are you're better off using `export_py_info` and `tar` directly.
+        **kwargs: Additional keyword arguments forwarded to the underlying `tar` rule.
     """
+    if mutate != None:
+        fail("mutate is not allowed in site_packages. If you want to use `mutate`, chances are you're better off using `export_py_info` and `tar` directly.")
+
     export_py_info(
         name = name + "_info",
         srcs = srcs,
-        exclude_filter = exclude_filter,
+    )
+    script_name = name + "_awk"
+    write_file(
+        name = script_name,
+        out = name + ".awk",
+        content = """
+@include "default"
+
+# Skip install directories that we don't need.
+# Keeping these in causes duplicate path conflicts in several versions of docker.
+/^(install\\/|install\\/lib\\/|install\\/lib\\/python3.11\\/) uid/ {
+  next
+}
+
+# Skip the install/bin/ directory entry itself.
+/^install\\/bin\\/ / {
+  next
+}
+
+{
+  # Place binaries from install/bin/ under ./usr/bin/.
+  if (sub("install/bin/", "./usr/bin/")) {
+    # matched and replaced, done
+  } else {
+    # Remove prefixes for third party dependencies.
+    sub("install/lib/python3.11/site-packages/", "");
+
+    # Add everything, first and third party code, into ./usr/lib/python3/dist-packages.
+    # We sohuld abstract this into the interface of site_packages when we have the need to.
+    sub(/^/, "./usr/lib/python3/dist-packages/")
+  }
+}
+""".split("\n") 
     )
     tar(
         name = name,
         srcs = [":" + name + "_info"],
+        mutate = _mutate(
+            awk_script = script_name,
+        ),
         **kwargs
     )
