@@ -63,6 +63,12 @@ apt.install(
         "libstdc++-12-dev",
         "libstdc++6",
         "linux-libc-dev",
+
+        # Go/Gazelle does not let us inject cgo deps in a clean way.
+        # So we have to inject these deps into every c compilation.
+        # https://github.com/bazel-contrib/bazel-gazelle/issues/1543
+        # https://github.com/bazel-contrib/bazel-gazelle/issues/2261
+        # TODO:  add here libpam0g
     ],
     suites = [
         "bookworm",
