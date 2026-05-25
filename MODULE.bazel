@@ -43,7 +43,10 @@ register_toolchains("//toolchains/gcc:host_gcc_toolchain")
 
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
 apt.sources_list(
-    architectures = ["amd64"],
+    architectures = [
+        "amd64",
+        "arm64",
+    ],
     components = ["main"],
     suites = [
         "bookworm",
@@ -52,7 +55,10 @@ apt.sources_list(
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
 apt.sources_list(
-    architectures = ["amd64"],
+    architectures = [
+        "amd64",
+        "arm64",
+    ],
     components = ["main"],
     suites = ["bookworm-security"],
     uris = ["https://snapshot.debian.org/archive/debian-security/20251001T023456Z"],
@@ -81,12 +87,19 @@ apt.install(
 use_repo(
     apt,
     "bookworm-security_linux-libc-dev-amd64_6.1.153-1",
+    "bookworm-security_linux-libc-dev-arm64_6.1.153-1",
     "bookworm_libc6-amd64_2.36-9-deb12u13",
+    "bookworm_libc6-arm64_2.36-9-deb12u13",
     "bookworm_libc6-dev-amd64_2.36-9-deb12u13",
+    "bookworm_libc6-dev-arm64_2.36-9-deb12u13",
     "bookworm_libgcc-12-dev-amd64_12.2.0-14-deb12u1",
+    "bookworm_libgcc-12-dev-arm64_12.2.0-14-deb12u1",
     "bookworm_libgcc-s1-amd64_12.2.0-14-deb12u1",
+    "bookworm_libgcc-s1-arm64_12.2.0-14-deb12u1",
     "bookworm_libstdc---12-dev-amd64_12.2.0-14-deb12u1",
+    "bookworm_libstdc---12-dev-arm64_12.2.0-14-deb12u1",
     "bookworm_libstdc--6-amd64_12.2.0-14-deb12u1",
+    "bookworm_libstdc--6-arm64_12.2.0-14-deb12u1",
 )
 
 # TODO(bazel-ready): Add auto-formatting with buildifier
