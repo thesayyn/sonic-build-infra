@@ -1,0 +1,7 @@
+# Host-side tools when Bazel's execution platform is Linux aarch64. The
+# prebuilt x86_64 GCC tarball cannot run on arm64; delegate to the system
+# toolchain (typical on Debian/Ubuntu aarch64 builders).
+
+package(default_visibility = ["//toolchains/gcc/tools:__pkg__"])
+
+exports_files(glob(["wrappers/*"]))

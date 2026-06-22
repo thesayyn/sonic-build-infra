@@ -1,6 +1,7 @@
 # Keep bazel_compatibility in sync with sonic-buildimage's .bazelversion.
 module(
     name = "sonic-build-infra",
+    version = "0.0.0",
     bazel_compatibility = [">=8.5.1", "<=8.5.1"],
 )
 
@@ -18,9 +19,10 @@ git_override(
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "bazel_lib", version = "3.1.1")
 bazel_dep(name = "rules_distroless", version = "0.0.0")
-local_path_override(
+git_override(
     module_name = "rules_distroless",
-    path = "../../bazel-contrib/rules_distroless",
+    commit = "ebfd74a2e07b83235e064bb63ace98a1a5223e02",
+    remote = "https://github.com/bazel-contrib/rules_distroless",
 )
 
 fetch_gcc = use_repo_rule("//toolchains/gcc:gcc.bzl", "fetch_gcc")
@@ -40,6 +42,7 @@ fetch_gcc(
 register_toolchains("//toolchains/gcc:host_gcc_toolchain")
 
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+# Hermetic toolchain sysroot is amd64-only; arm64 exec uses host headers/tools.
 apt.sources_list(
     architectures = ["amd64"],
     components = ["main"],
@@ -49,6 +52,8 @@ apt.sources_list(
     ],
     uris = ["https://snapshot.debian.org/archive/debian/20251001T023456Z"],
 )
+# debian-security snapshot has no bookworm-security binary-arm64 index; amd64 only.
+# AArch64 linux-libc-dev is resolved from bookworm main (see MODULE.bazel.lock).
 apt.sources_list(
     architectures = ["amd64"],
     components = ["main"],
@@ -76,6 +81,8 @@ apt.install(
         "bookworm-security",
     ],
 )
+# amd64 repos feed the hermetic x86_64 GCC toolchain (toolchains/gcc/args).
+# Native aarch64 exec uses host /usr/include (allow_system_includes_aarch64), not these.
 use_repo(
     apt,
     "bookworm-security_linux-libc-dev-amd64_6.1.153-1",
