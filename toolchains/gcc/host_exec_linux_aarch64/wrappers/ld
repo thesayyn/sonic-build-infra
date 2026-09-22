@@ -1,0 +1,61 @@
+#!/bin/bash
+# Bazel C++ links pass -Wl,... and need g++.
+# rules_rust passes GNU ld flags; forward them through g++ -Wl,... (driver adds lib paths/crt).
+set -euo pipefail
+
+for arg in "$@"; do
+  case "$arg" in
+    -Wl,*|-Wl)
+      export PATH="/usr/bin:/bin:${PATH:-}"
+      exec /usr/bin/g++ -B/usr/bin/ "$@"
+      ;;
+  esac
+done
+
+is_rust_link() {
+  for arg in "$@"; do
+    case "$arg" in
+      *.rlib|*.rmeta|*.rcgu.*|*rustlib*|*librustc*|*libproc_macro*)
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
+
+if is_rust_link "$@"; then
+  gpp_args=()
+  nargs=$#
+  i=1
+  while [[ $i -le $nargs ]]; do
+    eval "arg=\${$i}"
+    case "$arg" in
+      -z)
+        eval "zarg=\${$((i + 1))}"
+        gpp_args+=("-Wl,-z,$zarg")
+        i=$((i + 1))
+        ;;
+      -pie|-shared|-dynamic|-static|-Bstatic|-Bdynamic)
+        gpp_args+=("$arg")
+        ;;
+      -l*|-L*|-o|*.o|*.rlib|*.rmeta|*.a|/*|*symbols.o|*symbols.o)
+        gpp_args+=("$arg")
+        ;;
+      -O0|-O1|-O2|-O3)
+        ;;
+      --*)
+        # rustc ld flags: --as-needed, --version-script=..., --no-undefined-version, etc.
+        gpp_args+=("-Wl,$arg")
+        ;;
+      *)
+        gpp_args+=("$arg")
+        ;;
+    esac
+    i=$((i + 1))
+  done
+  export PATH="/usr/bin:/bin:${PATH:-}"
+  exec /usr/bin/g++ -B/usr/bin/ "${gpp_args[@]}"
+fi
+
+export PATH="/usr/bin:/bin:${PATH:-}"
+exec /usr/bin/g++ -B/usr/bin/ "$@"

@@ -40,6 +40,21 @@ cc_args(
     visibility = ["//visibility:public"],
 )
 
+# Native aarch64 exec uses the system libc/SDK under /usr/include; allowlist so
+# rules_cc strict include checks do not fail on system headers.
+cc_args(
+    name = "allow_system_includes_aarch64",
+    actions = [
+        "@rules_cc//cc/toolchains/actions:compile_actions",
+    ],
+    allowlist_absolute_include_directories = [
+        "/usr/include",
+        "/usr/include/aarch64-linux-gnu",
+        "/usr/lib/gcc/aarch64-linux-gnu",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 cc_args(
     name = "target",
     actions = [

@@ -33,16 +33,24 @@ alias(
 
 cc_toolchain(
     name = "gcc",
-    args = [
-        "//toolchains/gcc/args:nostdlib",
-        "//toolchains/gcc/args:nostdinc",
-        "//toolchains/gcc/args:nostdinc++",
-        "//toolchains/gcc/args:links",
-        "//toolchains/gcc/args:c_includes",  # C compilation with -isystem for libc
-        "//toolchains/gcc/args:cpp_includes",  # C++ compilation with -idirafter for #include_next
-        "//toolchains/args:no_absolute_paths_for_builtins",
-        "//toolchains/args:warnings",
-    ],
+    args = select({
+        "//toolchains/constraint:linux_aarch64": [
+            "//toolchains/gcc/args:nostdlib",
+            "//toolchains/args:no_absolute_paths_for_builtins",
+            "//toolchains/args:allow_system_includes_aarch64",
+            "//toolchains/args:warnings",
+        ],
+        "//conditions:default": [
+            "//toolchains/gcc/args:nostdlib",
+            "//toolchains/gcc/args:nostdinc",
+            "//toolchains/gcc/args:nostdinc++",
+            "//toolchains/gcc/args:links",
+            "//toolchains/gcc/args:c_includes",  # C compilation with -isystem for libc
+            "//toolchains/gcc/args:cpp_includes",  # C++ compilation with -idirafter for #include_next
+            "//toolchains/args:no_absolute_paths_for_builtins",
+            "//toolchains/args:warnings",
+        ],
+    }),
     compiler = "gcc",
     enabled_features = [
         ":external_include_paths",
